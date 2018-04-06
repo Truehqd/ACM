@@ -1,0 +1,92 @@
+拓扑排序一下，另外要额外注意一下短的字符串“大于”长的字符串
+
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<string>
+#include<stack>
+#include<queue>
+#include<vector>
+using namespace std;
+#define IO ios::sync_with_stdio(false)
+int in_degree[27];
+stack<char>s;
+vector<char>vec;
+vector<char>G[27];
+char t1,t2;
+char ss[102][102];
+int n;
+int flag=1;
+int prepare(char s1[],char s2[])
+{
+	int size1,size2;
+	size1=strlen(s1);
+	size2=strlen(s2);
+	int pos=0,f=0;
+	while(pos<size1&&pos<size2){
+		if(s1[pos]!=s2[pos]){
+			f=1;
+			break;
+		}
+		pos++;
+	}
+	if(f){
+		G[s1[pos]-'a'].push_back(s2[pos]);
+		in_degree[s2[pos]-'a']++;
+	}
+	else{
+		if(size1>size2) return 0;
+	}
+	return 1;
+}
+void solve()
+{
+	//for(int i=0;i<=25;i++)  G[i].clear();
+	while(!s.empty()) s.pop();
+	for(int i=0;i<=25;i++) if(!in_degree[i]) s.push(i+'a');
+	char tt;
+	int size;
+	int t;
+//	cout<<s.size()<<endl;
+//cout<<in_degree['s'-'a']<<endl;
+//cout<<G['r'-'a'][0]<<endl;
+	while(!s.empty()){
+		tt=s.top();
+		s.pop();
+		t=tt-'a';
+		size=G[t].size();
+		
+		for(int i=0;i<size;i++){
+			in_degree[G[t][i]-'a']--;
+		//	cout<<G[t][i]<<endl;
+			if(!in_degree[G[t][i]-'a']){
+			    s.push(G[t][i]);
+			    //cout<<G[t][i]<<endl;
+	    	}
+		}
+		vec.push_back(tt);
+	}
+//	cout<<vec.size()<<endl;
+	if(vec.size()!=26) cout<<"Impossible";
+	else {
+		size=vec.size();
+		for(int i=0;i<size;i++) cout<<vec[i];
+	}
+	cout<<endl;
+}
+int main()
+{
+	IO;
+	cin>>n;
+	for(int i=0;i<=25;i++)  G[i].clear();
+	for(int i=1;i<=n;i++) {
+		cin>>ss[i];
+		//cout<<'l';
+	}
+	memset(in_degree,0,sizeof(in_degree));
+	flag=1;
+	for(int i=1;i<n&&flag;i++) flag=prepare(ss[i],ss[i+1]);
+	if(flag)
+	solve();
+	else printf("Impossible\n");
+}
